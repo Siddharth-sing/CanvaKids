@@ -247,6 +247,7 @@ class MainActivity : AppCompatActivity() {
              shareIntent.type = "image/png"
 
              startActivity(Intent.createChooser(shareIntent,"Share with friends"))
+             /* Saved button*/
          }
 
         }
