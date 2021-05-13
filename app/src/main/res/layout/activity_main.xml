@@ -152,8 +152,9 @@
 
         <ImageButton
             android:id="@+id/ib_gallery"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:backgroundTint="#00BFA5"
             android:src="@drawable/ic_image"
             android:contentDescription="gallery Image"
             android:scaleType="fitXY"
@@ -162,6 +163,7 @@
         <ImageButton
             android:id="@+id/ib_undo"
             android:layout_width="50dp"
+            android:backgroundTint="#00BFA5"
             android:layout_height="50dp"
             android:src="@drawable/ic_undo"
             android:contentDescription="brush Image"
@@ -172,9 +174,10 @@
 
         <ImageButton
             android:id="@+id/ib_brush"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@drawable/ic_brush"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:backgroundTint="#00BFA5"
+            android:src="@drawable/ic_draw"
             android:contentDescription="brush Image"
             android:scaleType="fitXY"
             android:layout_margin="5dp"
@@ -185,6 +188,7 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:src="@drawable/ic_redo"
+            android:backgroundTint="#00BFA5"
             android:contentDescription="brush Image"
             android:scaleType="fitXY"
             android:layout_margin="5dp"
@@ -193,9 +197,10 @@
 
         <ImageButton
             android:id="@+id/ib_save"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:src="@drawable/ic_save"
+            android:backgroundTint="#00BFA5"
             android:contentDescription="gallery Image"
             android:scaleType="fitXY"
             android:layout_margin="5dp"/>
