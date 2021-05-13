@@ -9,17 +9,21 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.media.MediaScannerConnection
+import android.net.Uri
 import android.os.AsyncTask
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.widget.ImageButton
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.get
-import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.dialog_brush_size.*
@@ -34,6 +38,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        title = "🎨  Canva Kids"
         setContentView(R.layout.activity_main)
 
 
@@ -41,7 +46,7 @@ class MainActivity : AppCompatActivity() {
 
         mImageButtonCurrentPaint = ll_paint_colors[1] as ImageButton  //ll_paint_colors is the name of linear layout and we can access elements of linear layout according to the position they are placed im it by using [].
         mImageButtonCurrentPaint!!.setImageDrawable(
-            ContextCompat.getDrawable(this,R.drawable.pallet_pressed)
+            ContextCompat.getDrawable(this, R.drawable.pallet_pressed)
         )
 
         ib_brush.setOnClickListener {
@@ -50,10 +55,12 @@ class MainActivity : AppCompatActivity() {
         ib_gallery.setOnClickListener {
             if(isReadStorageAllowed()){
                    /* Show gallery code */
-                val pickPhotoIntent = Intent(Intent.ACTION_PICK,
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                val pickPhotoIntent = Intent(
+                    Intent.ACTION_PICK,
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+                )
 
-             startActivityForResult(pickPhotoIntent,GALLERY)
+             startActivityForResult(pickPhotoIntent, GALLERY)
             }
             else{
                  requestStoragePermission()
@@ -87,13 +94,37 @@ class MainActivity : AppCompatActivity() {
                             iv_background.visibility = View.VISIBLE
                             iv_background.setImageURI(data.data)
                     }else{
-                        Toast.makeText(this, "Error in image parsing or image is corrupted", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this,
+                            "Error in image parsing or image is corrupted",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
 
-                }catch(e: Exception){
+                }catch (e: Exception){
                     Toast.makeText(this, "${e.printStackTrace()}", Toast.LENGTH_SHORT).show()
                 }
             }
+
+            if(requestCode == IMAGE_SAVED_CODE)
+            {
+                try{
+                    if(data!!.data != null){
+                        iv_background.visibility = View.VISIBLE
+                        iv_background.setImageURI(data.data)
+                    }else{
+                        Toast.makeText(
+                            this,
+                            "Error in image parsing or image is corrupted",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+
+                }catch (e: Exception){
+                    Toast.makeText(this, "${e.printStackTrace()}", Toast.LENGTH_SHORT).show()
+                }
+            }
+
         }
     }
 
@@ -129,10 +160,10 @@ class MainActivity : AppCompatActivity() {
             val colorTag = imageButton.tag.toString()
             drawing_view.setColor(colorTag)
             imageButton.setImageDrawable(
-                    ContextCompat.getDrawable(this,R.drawable.pallet_pressed)
+                ContextCompat.getDrawable(this, R.drawable.pallet_pressed)
             )
             mImageButtonCurrentPaint!!.setImageDrawable(
-                    ContextCompat.getDrawable(this,R.drawable.pallet_normal)
+                ContextCompat.getDrawable(this, R.drawable.pallet_normal)
             )
             mImageButtonCurrentPaint =view
         }
@@ -141,20 +172,31 @@ class MainActivity : AppCompatActivity() {
 
     private fun requestStoragePermission(){
 
-        if(ActivityCompat.shouldShowRequestPermissionRationale(this,arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE).toString())) {
+        if(ActivityCompat.shouldShowRequestPermissionRationale(
+                this, arrayOf(
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ).toString()
+            )) {
 
 
             Toast.makeText(this, "Need permission to add Background", Toast.LENGTH_SHORT).show()
 
         }
-        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE
-                                          ,Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                                          , STORAGE_PERMISSION_CODE)
+        ActivityCompat.requestPermissions(
+            this, arrayOf(
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ), STORAGE_PERMISSION_CODE
+        )
     }
 
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
         if(requestCode == STORAGE_PERMISSION_CODE){
@@ -169,13 +211,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun isReadStorageAllowed() :Boolean{
-         val result = ContextCompat.checkSelfPermission(this,Manifest.permission.READ_EXTERNAL_STORAGE)
+         val result = ContextCompat.checkSelfPermission(
+             this,
+             Manifest.permission.READ_EXTERNAL_STORAGE
+         )
          return result == PackageManager.PERMISSION_GRANTED
     }
 
     private fun getBitMapFromView(view: View): Bitmap {
 
-        val returnedBitmap = Bitmap.createBitmap(view.width,view.height,Bitmap.Config.ARGB_8888)
+        val returnedBitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(returnedBitmap)
         val bgDrawable = view.background
         if(bgDrawable != null)
@@ -183,7 +228,7 @@ class MainActivity : AppCompatActivity() {
             bgDrawable.draw(canvas)
         }
         else{
-            canvas.drawColor(Color.rgb(0,184,212))
+            canvas.drawColor(Color.rgb(0, 184, 212))
         }
         view.draw(canvas)
         return returnedBitmap
@@ -201,18 +246,20 @@ class MainActivity : AppCompatActivity() {
                    try{
 
                        val bytesOutput = ByteArrayOutputStream()
-                       mBitmap.compress(Bitmap.CompressFormat.PNG,90,bytesOutput)
-                       val f = File(externalCacheDir!!.absoluteFile.toString()
-                               + File.separator + "KidsDrawingApp"
-                               + System.currentTimeMillis() / 1000
-                               + ".png")
+                       mBitmap.compress(Bitmap.CompressFormat.PNG, 90, bytesOutput)
+                       val f = File(
+                           externalCacheDir!!.absoluteFile.toString()
+                                   + File.separator + "KidsDrawingApp"
+                                   + System.currentTimeMillis() / 1000
+                                   + ".png"
+                       )
 
                        val fileOutpotStream = FileOutputStream(f)
                        fileOutpotStream.write(bytesOutput.toByteArray())
                        fileOutpotStream.close()
                        result = f.absolutePath
 
-                   }catch(e: Exception){
+                   }catch (e: Exception){
                             result = ""
                             e.printStackTrace()
                    }
@@ -226,27 +273,30 @@ class MainActivity : AppCompatActivity() {
             super.onPostExecute(result)
 
            if(!result?.isEmpty()!!){
-               val snackbar= Snackbar.make(drawing_view, "🏳 Your file is safe now! ${result} ",
-                       Snackbar.LENGTH_LONG).setAction("Action", null)
+               val snackbar= Snackbar.make(
+                   drawing_view, "🏳 Your file is safe now! ${result} ",
+                   Snackbar.LENGTH_LONG
+               ).setAction("Action", null)
                snackbar.setActionTextColor(Color.BLUE)
                snackbar.show()
            }else{
-               val snackbar= Snackbar.make(drawing_view, "🥵 Something went wrong, file not saved! ",
-                       Snackbar.LENGTH_LONG).setAction("Action", null)
+               val snackbar= Snackbar.make(
+                   drawing_view, "🥵 Something went wrong, file not saved! ",
+                   Snackbar.LENGTH_LONG
+               ).setAction("Action", null)
                snackbar.setActionTextColor(Color.BLUE)
                snackbar.show()
            }
          MediaScannerConnection.scanFile(
-                 this@MainActivity,
-                 arrayOf(result),
-                 null
-         ){
-             path, uri->val shareIntent = Intent()
+             this@MainActivity,
+             arrayOf(result),
+             null
+         ){ path, uri->val shareIntent = Intent()
              shareIntent.action = Intent.ACTION_SEND
-             shareIntent.putExtra(Intent.EXTRA_STREAM,uri)
+             shareIntent.putExtra(Intent.EXTRA_STREAM, uri)
              shareIntent.type = "image/png"
 
-             startActivity(Intent.createChooser(shareIntent,"Share with friends"))
+             startActivity(Intent.createChooser(shareIntent, "Share with friends"))
              /* Saved button*/
          }
 
@@ -259,5 +309,45 @@ class MainActivity : AppCompatActivity() {
     companion object{
         private const val STORAGE_PERMISSION_CODE =1
         private const val GALLERY = 2
+        private const val IMAGE_SAVED_CODE = 3
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater : MenuInflater = menuInflater
+        inflater.inflate(R.menu.menu_items, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_saved_item -> {
+
+                Toast.makeText(this, "Saved Images ", Toast.LENGTH_SHORT).show()
+
+                if (isReadStorageAllowed()) {
+                    val intent = Intent(Intent.ACTION_GET_CONTENT)
+                    intent.setDataAndType(
+                        Uri.parse(
+                            Environment.getExternalStorageDirectory().path
+                                .toString() + File.separator + "" + File.separator
+                        ), "image/png"
+                    )
+                    startActivityForResult(intent, IMAGE_SAVED_CODE)
+                } else {
+                    requestStoragePermission()
+                }
+            }
+
+            R.id.menu_get_images -> {
+                Toast.makeText(this, "Get images ", Toast.LENGTH_SHORT).show()
+            }
+            R.id.menu_info -> {
+                Toast.makeText(this, "Info ", Toast.LENGTH_SHORT).show()
+                val infoIntent = Intent(this, InfoActivity::class.java)
+                startActivity(infoIntent)
+            }
+        }
+
+        return super.onOptionsItemSelected(item)
     }
 }
