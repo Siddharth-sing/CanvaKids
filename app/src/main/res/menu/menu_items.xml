@@ -2,9 +2,9 @@
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:title="Saved Images"
-          android:id="@+id/menu_get_images"
-          android:icon="@drawable/ic_draw"
+    <item android:title="Camera"
+          android:id="@+id/menu_get_camera"
+          android:icon="@drawable/ic_camera"
           app:showAsAction="ifRoom"
         />
     <item android:title="Get Images"

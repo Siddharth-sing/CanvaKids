@@ -23,6 +23,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.core.view.get
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
@@ -124,6 +125,17 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this, "${e.printStackTrace()}", Toast.LENGTH_SHORT).show()
                 }
             }
+            if(requestCode == CAMERA_ACCESS_CODE)
+            {
+
+                try{
+                      val bitmap = data?.extras?.get("data") as Bitmap
+                       iv_background.setImageBitmap(bitmap)
+                    }
+                catch (e: Exception){
+                    Toast.makeText(this, "${e.printStackTrace()}", Toast.LENGTH_SHORT).show()
+                }
+            }
 
         }
     }
@@ -190,6 +202,22 @@ class MainActivity : AppCompatActivity() {
             ), STORAGE_PERMISSION_CODE
         )
     }
+    private fun requestCameraPermission(){
+
+        if(ActivityCompat.shouldShowRequestPermissionRationale(
+                this, arrayOf(
+                    Manifest.permission.CAMERA
+                ).toString()
+            )) {
+
+                Toast.makeText(this, "Need permission to add Background", Toast.LENGTH_SHORT).show()
+        }
+        ActivityCompat.requestPermissions(
+            this, arrayOf(
+                Manifest.permission.CAMERA,
+            ), CAMERA_ACCESS_CODE
+        )
+    }
 
 
     override fun onRequestPermissionsResult(
@@ -208,6 +236,16 @@ class MainActivity : AppCompatActivity() {
             }
 
         }
+        if(requestCode == CAMERA_ACCESS_CODE){
+            if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+            {
+                Toast.makeText(this, "Camera Permission Granted ", Toast.LENGTH_SHORT).show()
+            }else{
+                Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show()
+            }
+
+        }
+
     }
 
     private fun isReadStorageAllowed() :Boolean{
@@ -216,6 +254,13 @@ class MainActivity : AppCompatActivity() {
              Manifest.permission.READ_EXTERNAL_STORAGE
          )
          return result == PackageManager.PERMISSION_GRANTED
+    }
+    private fun isCameraAllowed() :Boolean{
+        val result = ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.CAMERA
+        )
+        return result == PackageManager.PERMISSION_GRANTED
     }
 
     private fun getBitMapFromView(view: View): Bitmap {
@@ -310,6 +355,7 @@ class MainActivity : AppCompatActivity() {
         private const val STORAGE_PERMISSION_CODE =1
         private const val GALLERY = 2
         private const val IMAGE_SAVED_CODE = 3
+        private const val CAMERA_ACCESS_CODE = 4
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -338,14 +384,26 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            R.id.menu_get_images -> {
+            R.id.menu_get_camera -> {
                 Toast.makeText(this, "Get images ", Toast.LENGTH_SHORT).show()
+
+                if (isCameraAllowed()) {
+
+                    Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { intent ->
+                        intent.resolveActivity(packageManager)?.also {
+                            startActivityForResult(intent, CAMERA_ACCESS_CODE)
+                        }
+                    }
+                } else {
+                    requestCameraPermission()
+                }
             }
             R.id.menu_info -> {
                 Toast.makeText(this, "Info ", Toast.LENGTH_SHORT).show()
                 val infoIntent = Intent(this, InfoActivity::class.java)
                 startActivity(infoIntent)
             }
+
         }
 
         return super.onOptionsItemSelected(item)
