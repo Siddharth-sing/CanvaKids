@@ -7,14 +7,27 @@
           android:icon="@drawable/ic_camera"
           app:showAsAction="ifRoom"
         />
+    <item android:title="Color Picker"
+        android:id="@+id/imgPicker"
+        android:icon="@drawable/ic_baseline_color_lens_24"
+        app:showAsAction="ifRoom"/>
+
     <item android:title="Get Images"
         android:id="@+id/menu_saved_item"
         android:icon="@drawable/ic_widgets"
         app:showAsAction="ifRoom"
         />
+    <item android:title="Save"
+        android:id="@+id/save"
+        android:icon="@drawable/ic_share"
+        app:showAsAction="ifRoom"/>
     <item android:title="About"
         android:id="@+id/menu_info"
         android:icon="@drawable/ic_info"
         app:showAsAction="ifRoom"/>
+
+
+
+
 
 </menu>

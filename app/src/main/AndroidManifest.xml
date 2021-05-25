@@ -14,10 +14,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CanvaKids">
         <activity android:name=".MainActivity"
+            android:screenOrientation="portrait"
             />
         <activity
             android:name=".InfoActivity"
-            android:theme="@style/InfoTheme" />
+            android:theme="@style/InfoTheme"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".SplashActivity"
             android:theme="@style/SplashTheme"

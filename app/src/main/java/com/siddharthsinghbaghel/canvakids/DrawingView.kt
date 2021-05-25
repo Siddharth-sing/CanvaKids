@@ -19,7 +19,7 @@ class DrawingView(context: Context, attrs: AttributeSet): View(context,attrs) {
     private var canvas: Canvas? = null
     private val mPaths = ArrayList<CustomPath>()
     private val mUndoPath = ArrayList<CustomPath>()
-    internal val mRedoPath = ArrayList<CustomPath>()
+    private val mRedoPath = ArrayList<CustomPath>()
     private var mRedoIndex: Int = -1
 
     init {
@@ -132,6 +132,11 @@ class DrawingView(context: Context, attrs: AttributeSet): View(context,attrs) {
 
     fun setColor(newColor: String){
         color = Color.parseColor(newColor)
+        mDrawPaint!!.color = color
+
+    }
+    fun setPickerColor(newColor: Int){
+        color = newColor
         mDrawPaint!!.color = color
 
     }

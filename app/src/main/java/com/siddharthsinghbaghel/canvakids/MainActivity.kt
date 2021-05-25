@@ -8,7 +8,6 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
-import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
@@ -23,11 +22,12 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
 import androidx.core.view.get
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.dialog_brush_size.*
+import yuku.ambilwarna.AmbilWarnaDialog
+import yuku.ambilwarna.AmbilWarnaDialog.OnAmbilWarnaListener
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -36,6 +36,7 @@ import java.io.FileOutputStream
 class MainActivity : AppCompatActivity() {
 
     private var mImageButtonCurrentPaint: ImageButton? = null
+    private var mPickerDefaultColor = Color.MAGENTA
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -290,6 +291,7 @@ class MainActivity : AppCompatActivity() {
                {
                    try{
 
+                       val title : String = "KidsDrawingApp"+ System.currentTimeMillis() / 1000 + ".png"
                        val bytesOutput = ByteArrayOutputStream()
                        mBitmap.compress(Bitmap.CompressFormat.PNG, 90, bytesOutput)
                        val f = File(
@@ -297,6 +299,12 @@ class MainActivity : AppCompatActivity() {
                                    + File.separator + "KidsDrawingApp"
                                    + System.currentTimeMillis() / 1000
                                    + ".png"
+                       )
+                       val  g = MediaStore.Images.Media.insertImage(
+                           contentResolver,
+                           mBitmap,
+                           title,
+                           "Image of $title"
                        )
 
                        val fileOutpotStream = FileOutputStream(f)
@@ -310,8 +318,6 @@ class MainActivity : AppCompatActivity() {
                    }
                }
             return result
-
-
         }
 
         override fun onPostExecute(result: String?) {
@@ -319,7 +325,7 @@ class MainActivity : AppCompatActivity() {
 
            if(!result?.isEmpty()!!){
                val snackbar= Snackbar.make(
-                   drawing_view, "🏳 Your file is safe now! ${result} ",
+                   drawing_view, "🏳 Your file is safe now in gallery of phone! ",
                    Snackbar.LENGTH_LONG
                ).setAction("Action", null)
                snackbar.setActionTextColor(Color.BLUE)
@@ -332,18 +338,21 @@ class MainActivity : AppCompatActivity() {
                snackbar.setActionTextColor(Color.BLUE)
                snackbar.show()
            }
-         MediaScannerConnection.scanFile(
-             this@MainActivity,
-             arrayOf(result),
-             null
-         ){ path, uri->val shareIntent = Intent()
+
+
+
+      /*   MediaScannerConnection.scanFile(
+                this@MainActivity,
+                arrayOf(result),
+                null
+            ){ _, uri->
+             val shareIntent = Intent()
              shareIntent.action = Intent.ACTION_SEND
              shareIntent.putExtra(Intent.EXTRA_STREAM, uri)
              shareIntent.type = "image/png"
-
              startActivity(Intent.createChooser(shareIntent, "Share with friends"))
-             /* Saved button*/
-         }
+
+         }*/
 
         }
 
@@ -403,9 +412,37 @@ class MainActivity : AppCompatActivity() {
                 val infoIntent = Intent(this, InfoActivity::class.java)
                 startActivity(infoIntent)
             }
+            R.id.imgPicker -> {
+                openColorPicker();
+            }
+            R.id.save -> {
+
+                if (isReadStorageAllowed()) {
+                    BitmapAsyncTask(getBitMapFromView(fl_drawing_view_container)).execute()
+
+                } else {
+                    requestStoragePermission()
+                }
+
+            }
 
         }
 
         return super.onOptionsItemSelected(item)
+    }
+
+    fun openColorPicker() {
+        val colorPicker = AmbilWarnaDialog(
+            this,
+            mPickerDefaultColor,
+            object : OnAmbilWarnaListener {
+                override fun onCancel(dialog: AmbilWarnaDialog) {}
+                override fun onOk(dialog: AmbilWarnaDialog, color: Int) {
+
+                    mPickerDefaultColor = color
+                    drawing_view.setPickerColor(mPickerDefaultColor)
+                }
+            })
+        colorPicker.show()
     }
 }
